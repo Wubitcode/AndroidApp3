@@ -37,6 +37,10 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+    // Provides the interactive map used to display Toronto treasure locations.
+// MapLibre is used as an open-source mapping solution that does not require
+// Google Maps billing credentials for this assignment.
+    implementation(libs.maplibre.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
