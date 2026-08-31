@@ -1,31 +1,23 @@
-# AI Reflection – AndroidApp3 Treasure Hunt
+AI Reflection – AndroidApp3 Treasure Hunt
 
-## 1. How Did I Use AI in This Assignment?
+ 1. How Did I Use AI in This Assignment?
 
-- I used AI mainly as a guide while building the Treasure Hunt app step by step.
-- AI helped me understand how to connect a map, location permission, GPS coordinates,
-  treasure markers, clues, and distance checking.
-- One example was when I had an error with LocationManagerCompat.getCurrentLocation().
-  AI helped me understand that Kotlin could not determine which overloaded method to use,
-  so I changed the CancellationSignal type explicitly.
-- I also researched alternatives to Google Maps because Google Maps required billing setup.
-  I learned how to use MapLibre with OpenFreeMap instead.
+I used AI mostly as a guide to help show me the app step by step.
+I did not just generate everything at once. 
+I used AI when I had errors and when I needed to understand how location APIs,
+maps and GPS work. One example was when Google Maps required billing and 
+I did not want to add my credit card, so I learned about MapLibre and OpenFreeMap instead.
+ 2. How Did I Understand, Verify, and Adapt the Code?
 
-## 2. How Did I Understand, Verify, and Adapt the Code?
+I tested the project many times using ./gradlew build and the Android emulator. 
+I also tested different Toronto locations using GPS coordinates with adb. 
+I fixed errors when the build failed and changed the app so only the current treasure is shown.
+I also added a Check My Location button.
+ 3.   What Did I Learn or Get Better At?
 
-- I verified changes by running ./gradlew build after major updates.
-- I tested the app using the Android emulator and simulated Toronto GPS locations with adb.
-- I did not just paste all the code at once. I tested City Hall first, then individual
-  treasure locations, the permission dialog, the Check My Location button, and the
-  Treasure Reached message.
-- I changed the app so only the current treasure marker is visible instead of showing
-  every future destination.
-
-## 3. What Did I Learn or Get Better At?
-
-- I became more comfortable working with Android location permissions and GPS coordinates.
-- I learned how latitude and longitude can be compared using Location.distanceBetween().
-- I learned how Android activity lifecycle methods work with MapView.
-- I also learned how repositories help separate location data from MainActivity logic.
-- One challenge was resolving dependency and location API errors, but testing each step
-  helped me understand where the problems came from.
+I learned more about Android location permission, 
+latitude and longitude, maps, GPS testing and calculating 
+distance between locations. I also became more comfortable 
+debugging Kotlin errors and testing one feature at a time. 
+One challenge was setting up the map and location APIs, but after testing 
+step by step I understood them much better.
