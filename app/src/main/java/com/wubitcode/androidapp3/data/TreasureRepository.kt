@@ -3,27 +3,29 @@ package com.wubitcode.androidapp3.data
 import com.wubitcode.androidapp3.model.TreasureLocation
 
 /**
- * Provides the location data used by the Toronto Treasure Hunt.
+ * Provides the ordered location data used by the Toronto Treasure Hunt.
  *
- * Keeping treasure locations in a dedicated repository separates the
- * application's data from its user-interface and map logic. This structure
- * makes it easier to add, update, and retrieve treasure locations as the
- * hunt expands.
+ * Toronto City Hall serves as the official starting point. The participant
+ * must then visit twenty Toronto businesses in sequence. Each completed
+ * destination reveals a clue leading to the next treasure location.
+ *
+ * Keeping location data in a dedicated repository separates application
+ * data from map and user-interface logic and makes the hunt easier to
+ * maintain or expand in future versions.
  */
 object TreasureRepository {
 
     /**
-     * Returns the ordered list of locations participating in the
-     * Toronto Treasure Hunt.
+     * Returns all locations participating in the Toronto Treasure Hunt.
      *
-     * Toronto City Hall is the official starting point. Each completed
-     * location provides a clue that directs the participant toward the
-     * next destination.
+     * Index 0 represents the starting point at Toronto City Hall.
+     * Indexes 1 through 20 represent the twenty business destinations.
      */
     fun getTreasureLocations(): List<TreasureLocation> {
+
         return listOf(
 
-            // Starting point for the Toronto Treasure Hunt.
+            // Official starting point.
             TreasureLocation(
                 id = 0,
                 name = "Toronto City Hall",
@@ -34,7 +36,7 @@ object TreasureRepository {
                 nextClue = "Travel east along Queen Street to find an independent bookstore."
             ),
 
-            // Treasure Stop 1
+            // Business Stop 1
             TreasureLocation(
                 id = 1,
                 name = "Ben McNally Books",
@@ -42,51 +44,216 @@ object TreasureRepository {
                 latitude = 43.65199,
                 longitude = -79.36950,
                 clue = "Find the independent bookstore east of Toronto City Hall.",
-                nextClue = "Your next destination is a large used bookstore near Bloor and Spadina."
+                nextClue = "Head toward Bloor and Spadina and search for a large used bookstore."
             ),
 
-            // Treasure Stop 2
+            // Business Stop 2
             TreasureLocation(
                 id = 2,
                 name = "BMV Books",
                 address = "471 Bloor St W, Toronto, ON",
                 latitude = 43.66586,
                 longitude = -79.40682,
-                clue = "Search near Bloor and Spadina for shelves filled with books, music, and more.",
-                nextClue = "Head south toward Queen Street West for another independent bookstore."
+                clue = "Find the bookstore filled with used books, music, and movies near the Annex.",
+                nextClue = "Travel south toward Queen Street West and find another independent bookstore."
             ),
 
-            // Treasure Stop 3
+            // Business Stop 3
             TreasureLocation(
                 id = 3,
                 name = "Type Books",
                 address = "883 Queen St W, Toronto, ON",
                 latitude = 43.64555,
                 longitude = -79.41155,
-                clue = "Find an independent bookstore along Toronto's Queen Street West.",
-                nextClue = "Your next stop is a bakery hidden in the colourful Kensington Market."
+                clue = "Find the independent bookstore along Queen Street West.",
+                nextClue = "Your next destination is a bakery hidden inside colourful Kensington Market."
             ),
 
-            // Treasure Stop 4
+            // Business Stop 4
             TreasureLocation(
                 id = 4,
                 name = "Blackbird Baking Co.",
                 address = "172 Baldwin St, Toronto, ON",
                 latitude = 43.65488,
                 longitude = -79.40062,
-                clue = "Follow the smell of fresh bread into Kensington Market.",
+                clue = "Follow the smell of fresh bread through Kensington Market.",
                 nextClue = "Travel west to Roncesvalles Avenue and look for another independent bookstore."
             ),
 
-            // Treasure Stop 5
+            // Business Stop 5
             TreasureLocation(
                 id = 5,
                 name = "Another Story Bookshop",
                 address = "315 Roncesvalles Ave, Toronto, ON",
                 latitude = 43.64855,
                 longitude = -79.44974,
-                clue = "Find the independent bookstore on Roncesvalles Avenue.",
-                nextClue = "Excellent work! More Toronto treasure locations are coming next."
+                clue = "Find the neighbourhood bookstore on Roncesvalles Avenue.",
+                nextClue = "Head east to Toronto's historic Distillery District and look for a famous coffee roaster."
+            ),
+
+            // Business Stop 6
+            TreasureLocation(
+                id = 6,
+                name = "Balzac's Coffee Roasters",
+                address = "1 Trinity St, Toronto, ON",
+                latitude = 43.650126,
+                longitude = -79.359408,
+                clue = "Find the coffee shop inside Toronto's historic Distillery District.",
+                nextClue = "Stay in the Distillery District and search for a shop dedicated to chocolate."
+            ),
+
+            // Business Stop 7
+            TreasureLocation(
+                id = 7,
+                name = "SOMA Chocolatemaker",
+                address = "32 Tank House Lane, Toronto, ON",
+                latitude = 43.65071,
+                longitude = -79.35825,
+                clue = "Find the chocolate shop hidden among the brick buildings of the Distillery District.",
+                nextClue = "Travel west to Ossington Avenue and look for a specialty coffee roaster."
+            ),
+
+            // Business Stop 8
+            TreasureLocation(
+                id = 8,
+                name = "Pilot Coffee Roasters",
+                address = "117 Ossington Ave, Toronto, ON",
+                latitude = 43.6466154,
+                longitude = -79.4195051,
+                clue = "Find the coffee roaster along busy Ossington Avenue.",
+                nextClue = "Return downtown and find an elegant coffee shop inside a historic building on Yonge Street."
+            ),
+
+            // Business Stop 9
+            TreasureLocation(
+                id = 9,
+                name = "Dineen Coffee Co.",
+                address = "140 Yonge St, Toronto, ON",
+                latitude = 43.651122,
+                longitude = -79.379024,
+                clue = "Find the coffee shop inside the historic Dineen Building.",
+                nextClue = "Head toward Kensington Market and look for a coffee shop on Baldwin Street."
+            ),
+
+            // Business Stop 10
+            TreasureLocation(
+                id = 10,
+                name = "Jimmy's Coffee",
+                address = "191 Baldwin St, Toronto, ON",
+                latitude = 43.65490,
+                longitude = -79.40090,
+                clue = "Find the neighbourhood coffee shop on Baldwin Street.",
+                nextClue = "Stay in Kensington Market and find a tiny taco shop nearby."
+            ),
+
+            // Business Stop 11
+            TreasureLocation(
+                id = 11,
+                name = "Seven Lives Tacos y Mariscos",
+                address = "72 Kensington Ave, Toronto, ON",
+                latitude = 43.65455,
+                longitude = -79.40077,
+                clue = "Find the popular taco shop in the heart of Kensington Market.",
+                nextClue = "Travel toward Toronto's Entertainment District and find a Northern Thai restaurant."
+            ),
+
+            // Business Stop 12
+            TreasureLocation(
+                id = 12,
+                name = "PAI Northern Thai Kitchen",
+                address = "18 Duncan St, Toronto, ON",
+                latitude = 43.6478303,
+                longitude = -79.3888174,
+                clue = "Find the Northern Thai restaurant on Duncan Street.",
+                nextClue = "Head west along Queen Street to find a long-running Italian restaurant."
+            ),
+
+            // Business Stop 13
+            TreasureLocation(
+                id = 13,
+                name = "Terroni Queen",
+                address = "720 Queen St W, Toronto, ON",
+                latitude = 43.646254,
+                longitude = -79.4091805,
+                clue = "Find the Italian restaurant that began on Queen Street West.",
+                nextClue = "Your next stop is an Italian bakery on King Street West."
+            ),
+
+            // Business Stop 14
+            TreasureLocation(
+                id = 14,
+                name = "Forno Cultura",
+                address = "609 King St W, Toronto, ON",
+                latitude = 43.64418,
+                longitude = -79.40072,
+                clue = "Find the Italian bakery along King Street West.",
+                nextClue = "Travel far west toward Mimico and search for a well-known Italian bakery."
+            ),
+
+            // Business Stop 15
+            TreasureLocation(
+                id = 15,
+                name = "SanRemo Bakery",
+                address = "374 Royal York Rd, Toronto, ON",
+                latitude = 43.61854,
+                longitude = -79.49952,
+                clue = "Find the long-running bakery on Royal York Road.",
+                nextClue = "Head east to Riverdale and find a coffee shop overlooking the park."
+            ),
+
+            // Business Stop 16
+            TreasureLocation(
+                id = 16,
+                name = "Rooster Coffee House",
+                address = "479 Broadview Ave, Toronto, ON",
+                latitude = 43.66920,
+                longitude = -79.35274,
+                clue = "Find the coffee house overlooking Riverdale Park.",
+                nextClue = "Return to Queen Street West and search for a French-style patisserie."
+            ),
+
+            // Business Stop 17
+            TreasureLocation(
+                id = 17,
+                name = "Nadège Patisserie",
+                address = "780 Queen St W, Toronto, ON",
+                latitude = 43.64584,
+                longitude = -79.41143,
+                clue = "Find the French-style patisserie along Queen Street West.",
+                nextClue = "Head toward Harbord Street and search for a bookstore specializing in science fiction and fantasy."
+            ),
+
+            // Business Stop 18
+            TreasureLocation(
+                id = 18,
+                name = "Bakka-Phoenix Books",
+                address = "84 Harbord St, Toronto, ON",
+                latitude = 43.6631218,
+                longitude = -79.4026244,
+                clue = "Find the bookstore known for science fiction and fantasy.",
+                nextClue = "Travel east to Queen Street East and find an independent neighbourhood bookstore."
+            ),
+
+            // Business Stop 19
+            TreasureLocation(
+                id = 19,
+                name = "Queen Books",
+                address = "914 Queen St E, Toronto, ON",
+                latitude = 43.66071,
+                longitude = -79.34221,
+                clue = "Find the independent bookstore in Toronto's east end.",
+                nextClue = "Continue farther east toward the Beaches for your final business destination."
+            ),
+
+            // Business Stop 20
+            TreasureLocation(
+                id = 20,
+                name = "Book City - The Beach",
+                address = "1950 Queen St E, Toronto, ON",
+                latitude = 43.66930,
+                longitude = -79.30100,
+                clue = "Find the neighbourhood bookstore near Toronto's Beaches.",
+                nextClue = "You have discovered the final treasure!"
             )
         )
     }

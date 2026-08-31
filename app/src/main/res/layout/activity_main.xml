@@ -3,11 +3,32 @@
 <!--
     Main layout for the Toronto Treasure Hunt application.
 
-    The MapView fills the screen and provides the interactive map used
-    to display Toronto treasure locations and the participant's progress.
+    The map occupies the full screen while a location-check button is
+    positioned near the bottom so participants can manually verify
+    whether they have reached the current treasure destination.
 -->
-<org.maplibre.android.maps.MapView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mapView"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <!--
+        Displays the interactive Toronto map and all treasure locations.
+    -->
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--
+        Allows the participant to request a fresh location reading after
+        moving to the next treasure destination.
+    -->
+    <Button
+        android:id="@+id/checkLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:text="Check My Location" />
+
+</FrameLayout>
