@@ -8,11 +8,21 @@ appcompat = "1.8.0"
 material = "1.14.0"
 activityKtx = "1.13.0"
 constraintlayout = "2.2.2"
+
 # Defines the MapLibre Android SDK version used to provide interactive
 # map functionality for the Toronto Treasure Hunt without Google billing.
 maplibre = "13.5.1"
 
+# Defines the stable Room version used for local Treasure Hunt persistence.
+room = "2.8.4"
+
+# Defines the Kotlin Symbol Processing plugin used by Room to generate
+# database implementation code at compile time.
+ksp = "2.3.9"
+
+
 [libraries]
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -21,9 +31,27 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
 # Registers the MapLibre Android SDK dependency and connects it to the
 # centrally managed version declared in the [versions] section.
 maplibre-android = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
+
+# Provides the core Room database APIs used to store Treasure Hunt data
+# locally on the Android device.
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+
+# Provides Kotlin coroutine extensions for Room database operations.
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+
+# Processes Room annotations and generates the database implementation
+# during application compilation.
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+
 [plugins]
+
 android-application = { id = "com.android.application", version.ref = "agp" }
 
+# Enables Kotlin Symbol Processing so Room can generate its database code
+# from @Entity, @Dao, and @Database annotations.
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

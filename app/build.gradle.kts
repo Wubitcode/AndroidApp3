@@ -1,5 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
+
+    /*
+     * Enables Kotlin Symbol Processing for Room.
+     *
+     * KSP processes Room annotations such as @Entity, @Dao, and @Database
+     * and generates the required database implementation during compilation.
+     */
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -32,16 +40,38 @@ android {
 }
 
 dependencies {
+
+    // Core Android libraries used throughout the Treasure Hunt application.
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
-    // Provides the interactive map used to display Toronto treasure locations.
-// MapLibre is used as an open-source mapping solution that does not require
-// Google Maps billing credentials for this assignment.
+
+    /*
+     * Provides the interactive Toronto map used by the Treasure Hunt.
+     */
     implementation(libs.maplibre.android)
 
+    /*
+     * Provides Room's runtime database APIs for locally storing
+     * Treasure Hunt location and completion data.
+     */
+    implementation(libs.androidx.room.runtime)
+
+    /*
+     * Provides Kotlin coroutine extensions for asynchronous Room
+     * database operations.
+     */
+    implementation(libs.androidx.room.ktx)
+
+    /*
+     * Uses Kotlin Symbol Processing to generate Room database code
+     * from the application's annotations.
+     */
+    ksp(libs.androidx.room.compiler)
+
+    // Unit and Android instrumentation testing libraries.
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
