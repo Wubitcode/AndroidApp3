@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <!--
+        Primary heading for the participant's Treasure Hunt progress.
+    -->
+    <TextView
+        android:id="@+id/progressTitleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Treasure Hunt Progress"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--
+        Displays a numerical summary such as "3 of 21 treasures completed."
+        The value is populated dynamically from Room.
+    -->
+    <TextView
+        android:id="@+id/progressSummaryTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="0 of 21 treasures completed"
+        android:textSize="17sp"
+        app:layout_constraintTop_toBottomOf="@id/progressTitleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--
+        Provides a scrollable area for all Treasure Hunt progress entries.
+        Each row is created dynamically by TreasureProgressActivity.
+    -->
+    <ScrollView
+        android:id="@+id/progressScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/progressSummaryTextView"
+        app:layout_constraintBottom_toTopOf="@id/progressBackButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!--
+            Container populated at runtime with completed, current,
+            and locked Treasure Hunt entries.
+        -->
+        <LinearLayout
+            android:id="@+id/progressContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <!--
+        Returns the participant to the main Treasure Hunt map.
+    -->
+    <Button
+        android:id="@+id/progressBackButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Back to Map"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

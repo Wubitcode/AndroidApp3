@@ -3,16 +3,23 @@
 <!--
     Main layout for the Toronto Treasure Hunt application.
 
-    The map occupies the full screen while a location-check button is
-    positioned near the bottom so participants can manually verify
-    whether they have reached the current treasure destination.
+    The MapLibre map occupies the full screen while the participant controls
+    are displayed in a vertical panel near the bottom of the screen.
+
+    The controls allow participants to:
+    - Review their Treasure Hunt progress.
+    - Request a fresh location reading to verify the active destination.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!--
-        Displays the interactive Toronto map and all treasure locations.
+        Displays the interactive Toronto Treasure Hunt map.
+
+        The map fills the entire screen and remains behind the participant
+        controls positioned at the bottom of the layout.
     -->
     <org.maplibre.android.maps.MapView
         android:id="@+id/mapView"
@@ -20,15 +27,47 @@
         android:layout_height="match_parent" />
 
     <!--
-        Allows the participant to request a fresh location reading after
-        moving to the next treasure destination.
+        Groups the Treasure Hunt controls into a single vertical panel.
+
+        Positioning both buttons inside one container provides consistent
+        spacing and prevents the buttons from overlapping the map controls.
     -->
-    <Button
-        android:id="@+id/checkLocationButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/treasureControlsContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="32dp"
-        android:text="Check My Location" />
+        android:layout_gravity="bottom"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical">
+
+        <!--
+            Opens the Treasure Hunt Progress screen.
+
+            Participants can review completed destinations, identify the
+            currently active treasure, and see which future stops remain locked.
+        -->
+        <Button
+            android:id="@+id/viewProgressButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Progress" />
+
+        <!--
+            Requests a fresh device-location reading.
+
+            MainActivity compares the participant's current coordinates with
+            the active treasure location and verifies whether the destination
+            has been reached.
+        -->
+        <Button
+            android:id="@+id/checkLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Check My Location" />
+
+    </LinearLayout>
 
 </FrameLayout>

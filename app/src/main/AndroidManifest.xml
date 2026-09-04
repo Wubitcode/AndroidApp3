@@ -28,12 +28,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidApp3">
         <!--
+    Displays the participant's Treasure Hunt completion progress.
+    Future destinations remain locked until they are reached in sequence.
+-->
+        <activity
+            android:name=".TreasureProgressActivity"
+            android:exported="false" />
+        <!--
     Displays detailed information for the treasure location
         selected by the participant.
         -->
         <activity
             android:name=".TreasureDetailActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

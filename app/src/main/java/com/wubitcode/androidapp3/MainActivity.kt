@@ -40,10 +40,13 @@ import org.maplibre.android.maps.MapView
  * - Displays only the currently unlocked treasure destination.
  * - Opens a detailed information screen when the active treasure marker
  *   is selected.
+ * - Opens the Treasure Hunt Progress screen so participants can review
+ *   completed, current, and locked destinations.
  *
  * Assignment 6 expands the original Treasure Hunt by introducing persistent
- * Room storage and additional navigation while preserving the sequential
- * treasure-unlocking workflow created in Assignment 5.
+ * Room storage, detail navigation, progress tracking, and additional user
+ * interface improvements while preserving the sequential treasure-unlocking
+ * workflow created in Assignment 5.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -137,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Initializes the user interface, Room database, Treasure Hunt progress,
-     * MapLibre map, and location-check workflow.
+     * MapLibre map, navigation controls, and location-check workflow.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,8 +168,25 @@ class MainActivity : AppCompatActivity() {
                 .getDatabase(applicationContext)
                 .treasureDao()
 
+        /*
+         * Connects the Treasure Hunt controls defined in activity_main.xml
+         * to their corresponding MainActivity behaviour.
+         */
+        val viewProgressButton: Button =
+            findViewById(R.id.viewProgressButton)
+
         val checkLocationButton: Button =
             findViewById(R.id.checkLocationButton)
+
+        /*
+         * Opens the Treasure Hunt Progress screen.
+         *
+         * The progress activity reads completion information directly from
+         * Room, ensuring the participant always sees the persisted state.
+         */
+        viewProgressButton.setOnClickListener {
+            openTreasureProgress()
+        }
 
         /*
          * Requests a fresh device position whenever the participant chooses
@@ -383,6 +403,30 @@ class MainActivity : AppCompatActivity() {
             }
 
         startActivity(detailIntent)
+    }
+
+    /**
+     * Opens the Treasure Hunt Progress screen.
+     *
+     * TreasureProgressActivity independently retrieves progress information
+     * from Room, allowing it to display the latest completed, active, and
+     * locked destinations without duplicating state from MainActivity.
+     */
+    private fun openTreasureProgress() {
+
+        /*
+         * Creates an explicit Intent for TreasureProgressActivity.
+         *
+         * No additional data is required because the progress screen reads
+         * the authoritative Treasure Hunt state directly from Room.
+         */
+        val progressIntent =
+            Intent(
+                this,
+                TreasureProgressActivity::class.java
+            )
+
+        startActivity(progressIntent)
     }
 
     /**
