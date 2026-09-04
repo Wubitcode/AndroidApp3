@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!--
+        Displays the selected treasure destination name.
+        This is the primary heading for the detail screen.
+    -->
+    <TextView
+        android:id="@+id/treasureNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Treasure Name"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--
+        Displays the physical address of the selected treasure location.
+    -->
+    <TextView
+        android:id="@+id/treasureAddressTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Treasure Address"
+        android:textSize="17sp"
+        app:layout_constraintTop_toBottomOf="@id/treasureNameTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--
+        Shows the clue associated with the current treasure destination.
+    -->
+    <TextView
+        android:id="@+id/treasureClueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Treasure Clue"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/treasureAddressTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--
+        Displays whether this destination has already been completed.
+        The value will be populated dynamically from the Room database.
+    -->
+    <TextView
+        android:id="@+id/treasureStatusTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Status"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/treasureClueTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.wubitcode.androidapp3
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -30,12 +31,19 @@ import org.maplibre.android.maps.MapView
 /**
  * Main activity for the Toronto Treasure Hunt application.
  *
- * This activity coordinates the MapLibre map, Android location services,
- * treasure progression, Room database persistence, and participant feedback.
+ * Responsibilities:
+ * - Displays the Treasure Hunt using MapLibre and OpenFreeMap.
+ * - Retrieves the participant's current Android device location.
+ * - Verifies whether the participant is close enough to the active treasure.
+ * - Stores completed treasure locations permanently using Room.
+ * - Restores Treasure Hunt progress when the application is reopened.
+ * - Displays only the currently unlocked treasure destination.
+ * - Opens a detailed information screen when the active treasure marker
+ *   is selected.
  *
- * Assignment 6 improves the original Treasure Hunt by storing completion
- * progress in Room so visited locations remain completed after the
- * application is closed and reopened.
+ * Assignment 6 expands the original Treasure Hunt by introducing persistent
+ * Room storage and additional navigation while preserving the sequential
+ * treasure-unlocking workflow created in Assignment 5.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -56,8 +64,8 @@ class MainActivity : AppCompatActivity() {
     /**
      * Reference to the initialized MapLibre map.
      *
-     * This reference allows treasure and participant markers to be updated
-     * after the map finishes loading.
+     * Keeping this reference allows the activity to update treasure and
+     * participant markers after the map has finished loading.
      */
     private var mapLibreMap: MapLibreMap? = null
 
@@ -67,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     private var userLocationMarker: Marker? = null
 
     /**
-     * Marker representing the currently active treasure location.
+     * Marker representing the currently active treasure destination.
      *
      * Only one treasure marker is displayed at a time so future locations
      * remain hidden until the participant completes the current destination.
@@ -75,15 +83,15 @@ class MainActivity : AppCompatActivity() {
     private var activeTreasureMarker: Marker? = null
 
     /**
-     * Room DAO used to read and update Treasure Hunt progress.
+     * Room DAO used to read and update persistent Treasure Hunt progress.
      */
     private lateinit var treasureDao: TreasureDao
 
     /**
      * Holds the predefined Toronto Treasure Hunt locations in hunt order.
      *
-     * Room stores the persistent completion state while this list provides
-     * the in-memory objects used by the map and location workflow.
+     * Room stores the persistent visited state while this mutable collection
+     * provides the in-memory objects used by the map and location workflow.
      */
     private val treasureLocations: MutableList<TreasureLocation> by lazy {
         TreasureRepository.getTreasureLocations().toMutableList()
@@ -92,12 +100,15 @@ class MainActivity : AppCompatActivity() {
     /**
      * Index of the treasure the participant must currently reach.
      *
-     * This value is reconstructed from Room when the application starts.
+     * The value is reconstructed from Room whenever the application starts.
      */
     private var currentTreasureIndex = 0
 
     /**
      * Handles the result of Android's runtime location-permission request.
+     *
+     * Either precise or approximate location permission is sufficient for
+     * attempting a location check, although GPS is preferred when available.
      */
     private val locationPermissionLauncher =
         registerForActivityResult(
@@ -132,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         /*
-         * Initializes MapLibre before the MapView is accessed.
+         * MapLibre must be initialized before the MapView is accessed.
          */
         MapLibre.getInstance(this)
 
@@ -141,13 +152,13 @@ class MainActivity : AppCompatActivity() {
         mapView = findViewById(R.id.mapView)
 
         /*
-         * Forwards the saved Android state to MapView so map state can be
-         * restored after activity recreation.
+         * Forwards the saved Android activity state to MapView so the map
+         * can restore its internal state after activity recreation.
          */
         mapView.onCreate(savedInstanceState)
 
         /*
-         * Obtains the Room DAO from the application's singleton database.
+         * Obtains the Treasure DAO from the singleton Room database.
          */
         treasureDao =
             TreasureDatabase
@@ -158,8 +169,8 @@ class MainActivity : AppCompatActivity() {
             findViewById(R.id.checkLocationButton)
 
         /*
-         * Requests a fresh geographic position whenever the participant
-         * chooses to verify the active treasure location.
+         * Requests a fresh device position whenever the participant chooses
+         * to verify whether they have reached the active treasure.
          */
         checkLocationButton.setOnClickListener {
             checkLocationPermission()
@@ -168,8 +179,8 @@ class MainActivity : AppCompatActivity() {
         /*
          * Room operations are performed asynchronously using lifecycleScope.
          *
-         * The map is initialized only after saved treasure progress has been
-         * restored so the correct active destination appears immediately.
+         * The map is initialized only after stored Treasure Hunt progress has
+         * been restored so the correct active destination appears immediately.
          */
         lifecycleScope.launch {
 
@@ -194,8 +205,8 @@ class MainActivity : AppCompatActivity() {
             TreasureRepository.getStoredTreasureLocations(treasureDao)
 
         /*
-         * Creates a lookup table so Room's persisted visited states can
-         * efficiently be applied to the in-memory treasure objects.
+         * Creates a lookup table so Room's persisted visited state can be
+         * efficiently applied to the in-memory treasure objects.
          */
         val storedTreasureMap =
             storedTreasures.associateBy { treasure ->
@@ -211,8 +222,8 @@ class MainActivity : AppCompatActivity() {
         /*
          * Finds the first treasure that has not been completed.
          *
-         * If every destination has been visited, the index is placed after
-         * the final list item to represent a completed Treasure Hunt.
+         * If every destination has already been visited, the index is placed
+         * after the final list item to represent a completed Treasure Hunt.
          */
         val firstUnvisitedIndex =
             treasureLocations.indexOfFirst { treasure ->
@@ -228,13 +239,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Initializes the MapLibre map after Room progress has been restored.
+     * Initializes the MapLibre map after persistent Room progress has
+     * been restored.
      */
     private fun initializeMap() {
 
         mapView.getMapAsync { map ->
 
             mapLibreMap = map
+
+            /*
+             * Opens the detail screen when the participant taps the currently
+             * active treasure marker.
+             *
+             * Returning true consumes the click so MapLibre does not also
+             * perform its default marker-click behaviour for this marker.
+             */
+            map.setOnMarkerClickListener { marker ->
+
+                if (marker == activeTreasureMarker) {
+
+                    openCurrentTreasureDetails()
+
+                    true
+
+                } else {
+
+                    /*
+                     * Returning false allows MapLibre to process markers that
+                     * are not the active treasure using its normal behaviour.
+                     */
+                    false
+                }
+            }
 
             /*
              * Uses OpenFreeMap to provide detailed Toronto street mapping
@@ -244,25 +281,30 @@ class MainActivity : AppCompatActivity() {
                 "https://tiles.openfreemap.org/styles/liberty"
             ) {
 
-                if (treasureLocations.isEmpty()) {
+                when {
 
-                    Toast.makeText(
-                        this,
-                        "No treasure locations are currently available.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    treasureLocations.isEmpty() -> {
 
-                } else if (currentTreasureIndex >= treasureLocations.size) {
+                        Toast.makeText(
+                            this,
+                            "No treasure locations are currently available.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
-                    showTreasureHuntComplete()
+                    currentTreasureIndex >= treasureLocations.size -> {
 
-                } else {
+                        showTreasureHuntComplete()
+                    }
 
-                    displayCurrentTreasureMarker(map)
+                    else -> {
 
-                    positionCameraAtCurrentTreasure(map)
+                        displayCurrentTreasureMarker(map)
 
-                    checkLocationPermission()
+                        positionCameraAtCurrentTreasure(map)
+
+                        checkLocationPermission()
+                    }
                 }
             }
         }
@@ -270,6 +312,9 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Displays only the currently active treasure marker.
+     *
+     * Future treasures remain hidden until the participant successfully
+     * completes the current destination.
      */
     private fun displayCurrentTreasureMarker(map: MapLibreMap) {
 
@@ -299,6 +344,45 @@ class MainActivity : AppCompatActivity() {
                     .title(currentTreasure.name)
                     .snippet(currentTreasure.clue)
             )
+    }
+
+    /**
+     * Opens TreasureDetailActivity for the currently active destination.
+     *
+     * Only the treasure ID is transferred because TreasureDetailActivity
+     * retrieves the authoritative treasure information directly from Room.
+     * This avoids duplicating database information inside the Intent.
+     */
+    private fun openCurrentTreasureDetails() {
+
+        /*
+         * Prevents detail navigation when the Treasure Hunt is already
+         * complete or when there is no valid active treasure.
+         */
+        if (currentTreasureIndex >= treasureLocations.size) {
+            return
+        }
+
+        val currentTreasure =
+            treasureLocations[currentTreasureIndex]
+
+        /*
+         * Creates an explicit Intent targeting TreasureDetailActivity and
+         * supplies the active treasure's unique database identifier.
+         */
+        val detailIntent =
+            Intent(
+                this,
+                TreasureDetailActivity::class.java
+            ).apply {
+
+                putExtra(
+                    TreasureDetailActivity.EXTRA_TREASURE_ID,
+                    currentTreasure.id
+                )
+            }
+
+        startActivity(detailIntent)
     }
 
     /**
@@ -363,10 +447,10 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Retrieves the participant's current geographic position using
-     * Android's LocationManager.
+     * Android's built-in LocationManager.
      *
      * GPS is preferred when precise permission is available. Network
-     * positioning is used as a fallback.
+     * positioning is used as a fallback when GPS cannot be used.
      */
     private fun showCurrentLocation() {
 
@@ -391,38 +475,41 @@ class MainActivity : AppCompatActivity() {
 
         /*
          * GPS is preferred for accurate treasure verification when precise
-         * permission is available.
+         * location permission is available.
          */
-        val provider = when {
+        val provider =
+            when {
 
-            fineLocationGranted &&
-                    locationManager.isProviderEnabled(
-                        LocationManager.GPS_PROVIDER
-                    ) -> {
-                LocationManager.GPS_PROVIDER
+                fineLocationGranted &&
+                        locationManager.isProviderEnabled(
+                            LocationManager.GPS_PROVIDER
+                        ) -> {
+
+                    LocationManager.GPS_PROVIDER
+                }
+
+                locationManager.isProviderEnabled(
+                    LocationManager.NETWORK_PROVIDER
+                ) -> {
+
+                    LocationManager.NETWORK_PROVIDER
+                }
+
+                else -> {
+
+                    Toast.makeText(
+                        this,
+                        "Please enable location services to continue the Treasure Hunt.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    return
+                }
             }
-
-            locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-            ) -> {
-                LocationManager.NETWORK_PROVIDER
-            }
-
-            else -> {
-
-                Toast.makeText(
-                    this,
-                    "Please enable location services to continue the Treasure Hunt.",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                return
-            }
-        }
 
         /*
          * Explicitly declares the Android CancellationSignal type so Kotlin
-         * selects the correct LocationManagerCompat overload.
+         * selects the appropriate LocationManagerCompat overload.
          */
         val cancellationSignal:
                 android.os.CancellationSignal? = null
@@ -452,7 +539,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Displays the participant's most recent position on the map.
+     * Displays the participant's most recently detected geographic position
+     * on the map.
      */
     private fun displayCurrentLocation(location: Location) {
 
@@ -463,8 +551,8 @@ class MainActivity : AppCompatActivity() {
             )
 
         /*
-         * Prevents duplicate participant markers after repeated
-         * Check My Location requests.
+         * Removes the previous participant marker so repeated location checks
+         * do not create duplicate "Your Location" markers.
          */
         userLocationMarker?.remove()
 
@@ -480,7 +568,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Calculates the distance between the participant and the active treasure.
      *
-     * The treasure is considered completed when the participant is within
+     * The destination is considered completed when the participant is within
      * the configured 75-metre arrival radius.
      */
     private fun checkTreasureDistance(
@@ -531,9 +619,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * Marks the active treasure as completed and persists that status in Room.
      *
-     * Setting the in-memory state immediately prevents repeated location
-     * checks from completing the same treasure while the database update
-     * is being processed.
+     * Updating the in-memory value immediately prevents repeated location
+     * checks from completing the same treasure while the asynchronous Room
+     * database update is still being processed.
      */
     private fun markTreasureReached(
         treasure: TreasureLocation
@@ -560,10 +648,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Advances the Treasure Hunt after a location has been persisted in Room.
+     * Advances the Treasure Hunt after the completed location has been
+     * persisted in Room.
      *
      * The completed location's next clue is displayed before the newly
-     * unlocked marker replaces the previous treasure marker.
+     * unlocked treasure marker replaces the previous marker.
      */
     private fun advanceToNextTreasure(
         completedTreasure: TreasureLocation
@@ -573,6 +662,10 @@ class MainActivity : AppCompatActivity() {
 
         if (currentTreasureIndex >= treasureLocations.size) {
 
+            /*
+             * Removes the final active marker after all destinations have
+             * been successfully completed.
+             */
             activeTreasureMarker?.remove()
 
             activeTreasureMarker = null
@@ -597,6 +690,10 @@ class MainActivity : AppCompatActivity() {
 
                     dialog.dismiss()
 
+                    /*
+                     * Replaces the completed treasure marker with the newly
+                     * unlocked destination and centers the map on it.
+                     */
                     mapLibreMap?.let { map ->
 
                         displayCurrentTreasureMarker(map)
@@ -629,13 +726,14 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(
                 "Finish"
             ) { dialog, _ ->
+
                 dialog.dismiss()
             }
             .show()
     }
 
     /**
-     * Forwards the Android activity start event to MapView.
+     * Forwards the Android activity start lifecycle event to MapView.
      */
     override fun onStart() {
         super.onStart()
@@ -684,11 +782,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Saves MapView state if Android recreates the activity.
+     * Saves MapView state if Android recreates this activity.
      */
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
+
         super.onSaveInstanceState(outState)
 
         mapView.onSaveInstanceState(outState)
