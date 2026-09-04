@@ -3,38 +3,58 @@ package com.wubitcode.androidapp3.data
 import com.wubitcode.androidapp3.model.TreasureLocation
 
 /**
- * Provides the ordered location data used by the Toronto Treasure Hunt.
+ * Provides the ordered location data and Room persistence operations used by
+ * the Toronto Treasure Hunt application.
  *
  * Toronto City Hall serves as the official starting point. The participant
  * must then visit twenty Toronto businesses in sequence. Each completed
  * destination reveals a clue leading to the next treasure location.
  *
- * Keeping location data in a dedicated repository separates application
- * data from map and user-interface logic and makes the hunt easier to
- * maintain or expand in future versions.
+ * Keeping Treasure Hunt data and persistence operations in a dedicated
+ * repository separates application data from map and user-interface logic.
+ * This structure also makes the application easier to maintain, test,
+ * and expand with additional features such as treasure photos.
  */
 object TreasureRepository {
+
     /**
      * Initializes the Room database with the predefined Toronto Treasure Hunt
      * locations when the database is empty.
      *
      * Existing database records are preserved so previously completed
-     * treasure progress is not overwritten when the app is reopened.
+     * treasure progress and associated photo information are not overwritten
+     * when the application is reopened.
+     *
+     * @param treasureDao DAO used to access persistent Treasure Hunt data.
      */
-    suspend fun initializeDatabase(treasureDao: TreasureDao) {
+    suspend fun initializeDatabase(
+        treasureDao: TreasureDao
+    ) {
 
-        val storedTreasures = treasureDao.getAllTreasures()
+        val storedTreasures =
+            treasureDao.getAllTreasures()
 
+        /*
+         * Predefined destination data is inserted only when Room contains
+         * no treasure records. This protects previously saved participant
+         * progress from being replaced during subsequent application launches.
+         */
         if (storedTreasures.isEmpty()) {
-            treasureDao.insertAll(getTreasureLocations())
+
+            treasureDao.insertAll(
+                getTreasureLocations()
+            )
         }
     }
 
     /**
      * Retrieves all Treasure Hunt locations currently stored in Room.
      *
-     * The locations are returned in their official hunt order according
-     * to their unique ID values.
+     * The locations are returned in official hunt order according to their
+     * unique treasure ID values.
+     *
+     * @param treasureDao DAO used to retrieve persistent treasure records.
+     * @return Ordered list of stored Treasure Hunt destinations.
      */
     suspend fun getStoredTreasureLocations(
         treasureDao: TreasureDao
@@ -44,23 +64,60 @@ object TreasureRepository {
     }
 
     /**
-     * Records the completion of one treasure location in the Room database.
+     * Records completion of one treasure location in the Room database.
      *
-     * Persisting the visited state allows progress to remain available
-     * after the application is closed or restarted.
+     * Persisting the visited state allows participant progress to remain
+     * available after the application is closed, restarted, or recreated.
+     *
+     * @param treasureDao DAO used to update persistent Treasure Hunt data.
+     * @param treasureId Unique ID of the completed treasure destination.
      */
     suspend fun markTreasureVisited(
         treasureDao: TreasureDao,
         treasureId: Int
     ) {
-        treasureDao.markTreasureVisited(treasureId)
+
+        treasureDao.markTreasureVisited(
+            treasureId
+        )
+    }
+
+    /**
+     * Saves or replaces the local photo path associated with a treasure.
+     *
+     * The repository delegates the database update to TreasureDao so
+     * Activities and other user-interface components do not need to interact
+     * directly with Room database queries.
+     *
+     * A nullable photo path allows a treasure to exist without a photo and
+     * also supports removing a previously stored photo association if that
+     * feature is added later.
+     *
+     * @param treasureDao DAO used to update persistent Treasure Hunt data.
+     * @param treasureId Unique ID of the treasure receiving the photo.
+     * @param photoPath Local file path of the treasure photo, or null when
+     * no photo is associated with the destination.
+     */
+    suspend fun updateTreasurePhoto(
+        treasureDao: TreasureDao,
+        treasureId: Int,
+        photoPath: String?
+    ) {
+
+        treasureDao.updateTreasurePhoto(
+            treasureId,
+            photoPath
+        )
     }
 
     /**
      * Returns the number of completed treasure locations stored in Room.
      *
-     * This value can later be displayed as participant progress such as
-     * "8 of 20 locations completed."
+     * This value can be used by the progress screen to display information
+     * such as "8 of 21 treasures completed."
+     *
+     * @param treasureDao DAO used to retrieve persistent progress data.
+     * @return Number of treasure locations marked as visited.
      */
     suspend fun getVisitedCount(
         treasureDao: TreasureDao
@@ -70,14 +127,17 @@ object TreasureRepository {
     }
 
     /**
-     * Resets all Room-based Treasure Hunt progress.
+     * Resets all Room-based Treasure Hunt completion progress.
      *
-     * The location records remain in the database while their visited
-     * status is changed back to false.
+     * Destination records remain in the database while their visited status
+     * is changed back to false. Treasure location information is not deleted.
+     *
+     * @param treasureDao DAO used to reset persistent Treasure Hunt progress.
      */
     suspend fun resetStoredProgress(
         treasureDao: TreasureDao
     ) {
+
         treasureDao.resetProgress()
     }
 
@@ -86,12 +146,17 @@ object TreasureRepository {
      *
      * Index 0 represents the starting point at Toronto City Hall.
      * Indexes 1 through 20 represent the twenty business destinations.
+     *
+     * These predefined objects provide the initial data inserted into Room
+     * when the Treasure Hunt database is first created.
      */
     fun getTreasureLocations(): List<TreasureLocation> {
 
         return listOf(
 
-            // Official starting point.
+            /*
+             * Official Treasure Hunt starting point.
+             */
             TreasureLocation(
                 id = 0,
                 name = "Toronto City Hall",
@@ -102,7 +167,9 @@ object TreasureRepository {
                 nextClue = "Travel east along Queen Street to find an independent bookstore."
             ),
 
-            // Business Stop 1
+            /*
+             * Business Stop 1
+             */
             TreasureLocation(
                 id = 1,
                 name = "Ben McNally Books",
@@ -113,7 +180,9 @@ object TreasureRepository {
                 nextClue = "Head toward Bloor and Spadina and search for a large used bookstore."
             ),
 
-            // Business Stop 2
+            /*
+             * Business Stop 2
+             */
             TreasureLocation(
                 id = 2,
                 name = "BMV Books",
@@ -124,7 +193,9 @@ object TreasureRepository {
                 nextClue = "Travel south toward Queen Street West and find another independent bookstore."
             ),
 
-            // Business Stop 3
+            /*
+             * Business Stop 3
+             */
             TreasureLocation(
                 id = 3,
                 name = "Type Books",
@@ -135,7 +206,9 @@ object TreasureRepository {
                 nextClue = "Your next destination is a bakery hidden inside colourful Kensington Market."
             ),
 
-            // Business Stop 4
+            /*
+             * Business Stop 4
+             */
             TreasureLocation(
                 id = 4,
                 name = "Blackbird Baking Co.",
@@ -146,7 +219,9 @@ object TreasureRepository {
                 nextClue = "Travel west to Roncesvalles Avenue and look for another independent bookstore."
             ),
 
-            // Business Stop 5
+            /*
+             * Business Stop 5
+             */
             TreasureLocation(
                 id = 5,
                 name = "Another Story Bookshop",
@@ -157,7 +232,9 @@ object TreasureRepository {
                 nextClue = "Head east to Toronto's historic Distillery District and look for a famous coffee roaster."
             ),
 
-            // Business Stop 6
+            /*
+             * Business Stop 6
+             */
             TreasureLocation(
                 id = 6,
                 name = "Balzac's Coffee Roasters",
@@ -168,7 +245,9 @@ object TreasureRepository {
                 nextClue = "Stay in the Distillery District and search for a shop dedicated to chocolate."
             ),
 
-            // Business Stop 7
+            /*
+             * Business Stop 7
+             */
             TreasureLocation(
                 id = 7,
                 name = "SOMA Chocolatemaker",
@@ -179,7 +258,9 @@ object TreasureRepository {
                 nextClue = "Travel west to Ossington Avenue and look for a specialty coffee roaster."
             ),
 
-            // Business Stop 8
+            /*
+             * Business Stop 8
+             */
             TreasureLocation(
                 id = 8,
                 name = "Pilot Coffee Roasters",
@@ -190,7 +271,9 @@ object TreasureRepository {
                 nextClue = "Return downtown and find an elegant coffee shop inside a historic building on Yonge Street."
             ),
 
-            // Business Stop 9
+            /*
+             * Business Stop 9
+             */
             TreasureLocation(
                 id = 9,
                 name = "Dineen Coffee Co.",
@@ -201,7 +284,9 @@ object TreasureRepository {
                 nextClue = "Head toward Kensington Market and look for a coffee shop on Baldwin Street."
             ),
 
-            // Business Stop 10
+            /*
+             * Business Stop 10
+             */
             TreasureLocation(
                 id = 10,
                 name = "Jimmy's Coffee",
@@ -212,7 +297,9 @@ object TreasureRepository {
                 nextClue = "Stay in Kensington Market and find a tiny taco shop nearby."
             ),
 
-            // Business Stop 11
+            /*
+             * Business Stop 11
+             */
             TreasureLocation(
                 id = 11,
                 name = "Seven Lives Tacos y Mariscos",
@@ -223,7 +310,9 @@ object TreasureRepository {
                 nextClue = "Travel toward Toronto's Entertainment District and find a Northern Thai restaurant."
             ),
 
-            // Business Stop 12
+            /*
+             * Business Stop 12
+             */
             TreasureLocation(
                 id = 12,
                 name = "PAI Northern Thai Kitchen",
@@ -234,7 +323,9 @@ object TreasureRepository {
                 nextClue = "Head west along Queen Street to find a long-running Italian restaurant."
             ),
 
-            // Business Stop 13
+            /*
+             * Business Stop 13
+             */
             TreasureLocation(
                 id = 13,
                 name = "Terroni Queen",
@@ -245,7 +336,9 @@ object TreasureRepository {
                 nextClue = "Your next stop is an Italian bakery on King Street West."
             ),
 
-            // Business Stop 14
+            /*
+             * Business Stop 14
+             */
             TreasureLocation(
                 id = 14,
                 name = "Forno Cultura",
@@ -256,7 +349,9 @@ object TreasureRepository {
                 nextClue = "Travel far west toward Mimico and search for a well-known Italian bakery."
             ),
 
-            // Business Stop 15
+            /*
+             * Business Stop 15
+             */
             TreasureLocation(
                 id = 15,
                 name = "SanRemo Bakery",
@@ -267,7 +362,9 @@ object TreasureRepository {
                 nextClue = "Head east to Riverdale and find a coffee shop overlooking the park."
             ),
 
-            // Business Stop 16
+            /*
+             * Business Stop 16
+             */
             TreasureLocation(
                 id = 16,
                 name = "Rooster Coffee House",
@@ -278,7 +375,9 @@ object TreasureRepository {
                 nextClue = "Return to Queen Street West and search for a French-style patisserie."
             ),
 
-            // Business Stop 17
+            /*
+             * Business Stop 17
+             */
             TreasureLocation(
                 id = 17,
                 name = "Nadège Patisserie",
@@ -289,7 +388,9 @@ object TreasureRepository {
                 nextClue = "Head toward Harbord Street and search for a bookstore specializing in science fiction and fantasy."
             ),
 
-            // Business Stop 18
+            /*
+             * Business Stop 18
+             */
             TreasureLocation(
                 id = 18,
                 name = "Bakka-Phoenix Books",
@@ -300,7 +401,9 @@ object TreasureRepository {
                 nextClue = "Travel east to Queen Street East and find an independent neighbourhood bookstore."
             ),
 
-            // Business Stop 19
+            /*
+             * Business Stop 19
+             */
             TreasureLocation(
                 id = 19,
                 name = "Queen Books",
@@ -311,7 +414,9 @@ object TreasureRepository {
                 nextClue = "Continue farther east toward the Beaches for your final business destination."
             ),
 
-            // Business Stop 20
+            /*
+             * Business Stop 20
+             */
             TreasureLocation(
                 id = 20,
                 name = "Book City - The Beach",

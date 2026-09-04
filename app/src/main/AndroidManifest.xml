@@ -52,6 +52,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--
+    Securely shares treasure photo files with the device camera application.
+
+    FileProvider converts private application file paths into temporary
+    content URIs, avoiding direct exposure of the application's filesystem.
+-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <!--
+                References the FileProvider path configuration stored in
+                res/xml/file_paths.xml.
+            -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+
+        </provider>
 
 
     </application>

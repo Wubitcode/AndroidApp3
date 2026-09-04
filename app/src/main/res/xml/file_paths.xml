@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Defines the application-specific directory that may be securely shared
+    with an external camera application through Android FileProvider.
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Allows temporary access only to treasure photos stored inside
+        the application's private external Pictures directory.
+    -->
+    <external-files-path
+        name="treasure_photos"
+        path="Pictures/treasure_photos/" />
+
+</paths>

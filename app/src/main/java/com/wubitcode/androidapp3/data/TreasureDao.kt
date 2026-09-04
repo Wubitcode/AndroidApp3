@@ -7,41 +7,61 @@ import androidx.room.Query
 import com.wubitcode.androidapp3.model.TreasureLocation
 
 /**
- * Defines all Room database operations used by the Toronto Treasure Hunt.
+ * Data Access Object for TreasureLocation records.
  *
- * Room automatically generates the implementation of this interface.
- * Suspend functions are used so database work can later run asynchronously
- * without blocking the application's main user-interface thread.
+ * This interface defines all Room database operations used by the
+ * Toronto Treasure Hunt application, including initialization,
+ * progress tracking, reset support, and optional treasure photos.
  */
 @Dao
 interface TreasureDao {
 
     /**
-     * Inserts a collection of treasure locations into the database.
+     * Inserts the predefined Treasure Hunt destinations into Room.
      *
-     * REPLACE updates an existing treasure when another record with the
-     * same primary key is inserted.
+     * Existing rows with matching primary keys are replaced so the
+     * database remains synchronized with the application's destination data.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(treasures: List<TreasureLocation>)
+    suspend fun insertAll(
+        treasures: List<TreasureLocation>
+    )
 
     /**
-     * Retrieves all treasure locations in their official hunt order.
+     * Retrieves every Treasure Hunt destination in sequential ID order.
      */
-    @Query("SELECT * FROM treasure_locations ORDER BY id ASC")
+    @Query(
+        """
+        SELECT *
+        FROM treasure_locations
+        ORDER BY id ASC
+        """
+    )
     suspend fun getAllTreasures(): List<TreasureLocation>
 
     /**
-     * Retrieves one treasure location using its unique identifier.
+     * Retrieves a single treasure using its unique database identifier.
      *
-     * The result is nullable because the requested treasure may not yet
-     * exist in the database.
+     * @param treasureId ID of the requested treasure.
+     * @return Matching treasure or null when no record exists.
      */
-    @Query("SELECT * FROM treasure_locations WHERE id = :treasureId LIMIT 1")
-    suspend fun getTreasureById(treasureId: Int): TreasureLocation?
+    @Query(
+        """
+        SELECT *
+        FROM treasure_locations
+        WHERE id = :treasureId
+        LIMIT 1
+        """
+    )
+    suspend fun getTreasureById(
+        treasureId: Int
+    ): TreasureLocation?
 
     /**
-     * Marks one treasure location as completed.
+     * Marks a treasure destination as successfully completed.
+     *
+     * Only the completion field is changed so the remaining treasure
+     * information is preserved.
      */
     @Query(
         """
@@ -50,12 +70,34 @@ interface TreasureDao {
         WHERE id = :treasureId
         """
     )
-    suspend fun markTreasureVisited(treasureId: Int)
+    suspend fun markTreasureVisited(
+        treasureId: Int
+    )
 
     /**
-     * Returns the number of treasure locations that have been completed.
+     * Stores or replaces the local photo path associated with a treasure.
      *
-     * This value can later be used to display participant progress.
+     * The path references a photo stored in the application's private
+     * storage area. A nullable value allows the association to be removed
+     * later without deleting the treasure record itself.
+     *
+     * @param treasureId ID of the treasure receiving the photo.
+     * @param photoPath Local file path of the captured treasure photo.
+     */
+    @Query(
+        """
+        UPDATE treasure_locations
+        SET photoPath = :photoPath
+        WHERE id = :treasureId
+        """
+    )
+    suspend fun updateTreasurePhoto(
+        treasureId: Int,
+        photoPath: String?
+    )
+
+    /**
+     * Counts the number of destinations that have already been completed.
      */
     @Query(
         """
@@ -67,10 +109,16 @@ interface TreasureDao {
     suspend fun getVisitedCount(): Int
 
     /**
-     * Resets every treasure location to an unvisited state.
+     * Resets completion status for every Treasure Hunt destination.
      *
-     * This allows the Treasure Hunt to be restarted from Toronto City Hall.
+     * This operation affects only progress and does not delete treasure
+     * destination records or their associated information.
      */
-    @Query("UPDATE treasure_locations SET isVisited = 0")
+    @Query(
+        """
+        UPDATE treasure_locations
+        SET isVisited = 0
+        """
+    )
     suspend fun resetProgress()
 }

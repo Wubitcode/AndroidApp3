@@ -1,68 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<!--
+    Detail screen for one Toronto Treasure Hunt destination.
+
+    The screen displays:
+    - Treasure name
+    - Address
+    - Current clue
+    - Completion status
+    - Optional treasure photo
+    - Camera action for capturing or replacing the photo
+-->
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:fillViewport="true">
 
     <!--
-        Displays the selected treasure destination name.
-        This is the primary heading for the detail screen.
+        Vertical content container used so the detail screen remains readable
+        on devices with different screen sizes.
     -->
-    <TextView
-        android:id="@+id/treasureNameTextView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Treasure Name"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <!--
-        Displays the physical address of the selected treasure location.
-    -->
-    <TextView
-        android:id="@+id/treasureAddressTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Treasure Address"
-        android:textSize="17sp"
-        app:layout_constraintTop_toBottomOf="@id/treasureNameTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!--
+            Displays the human-readable treasure destination name.
+        -->
+        <TextView
+            android:id="@+id/treasureNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Treasure Name"
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
-    <!--
-        Shows the clue associated with the current treasure destination.
-    -->
-    <TextView
-        android:id="@+id/treasureClueTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Treasure Clue"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/treasureAddressTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!--
+            Displays the physical address of the selected treasure location.
+        -->
+        <TextView
+            android:id="@+id/treasureAddressTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Treasure Address"
+            android:textSize="17sp" />
 
-    <!--
-        Displays whether this destination has already been completed.
-        The value will be populated dynamically from the Room database.
-    -->
-    <TextView
-        android:id="@+id/treasureStatusTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Status"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/treasureClueTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!--
+            Displays the clue associated with the selected destination.
+        -->
+        <TextView
+            android:id="@+id/treasureClueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Treasure Clue"
+            android:textSize="17sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!--
+            Displays whether the selected treasure has already been completed.
+        -->
+        <TextView
+            android:id="@+id/treasureStatusTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Status"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <!--
+            Displays the participant's captured treasure photo.
+
+            The image starts with a neutral background until a saved photo
+            becomes available for this destination.
+        -->
+        <ImageView
+            android:id="@+id/treasurePhotoImageView"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_marginTop="24dp"
+            android:background="#E0E0E0"
+            android:contentDescription="Treasure photo"
+            android:scaleType="centerCrop" />
+
+        <!--
+            Launches the device camera so the participant can capture a photo
+            associated with the currently selected treasure destination.
+        -->
+        <Button
+            android:id="@+id/takePhotoButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Take Treasure Photo" />
+
+        <!--
+            Returns the participant to the Treasure Hunt map.
+        -->
+        <Button
+            android:id="@+id/detailBackButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp"
+            android:text="Back to Map" />
+
+    </LinearLayout>
+
+</ScrollView>
