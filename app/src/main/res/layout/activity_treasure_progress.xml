@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Progress screen for the Toronto Treasure Hunt.
+
+    The screen summarizes the participant's completion status and displays
+    completed, current, and locked treasure stops in a scrollable list.
+
+    Static visible text is referenced from strings.xml to improve
+    maintainability and remove hardcoded-string lint warnings.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,13 +17,13 @@
     android:padding="20dp">
 
     <!--
-        Primary heading for the participant's Treasure Hunt progress.
+        Main heading for the Treasure Hunt progress screen.
     -->
     <TextView
         android:id="@+id/progressTitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Treasure Hunt Progress"
+        android:text="@string/treasure_hunt_progress"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,38 +31,41 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!--
-        Displays a numerical summary such as "3 of 21 treasures completed."
-        The value is populated dynamically from Room.
+        Displays a dynamic summary such as:
+        "1 of 21 treasures completed".
+
+        The text is populated programmatically by TreasureProgressActivity.
     -->
     <TextView
         android:id="@+id/progressSummaryTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="0 of 21 treasures completed"
         android:textSize="17sp"
         app:layout_constraintTop_toBottomOf="@id/progressTitleTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!--
-        Provides a scrollable area for all Treasure Hunt progress entries.
-        Each row is created dynamically by TreasureProgressActivity.
+        Scrollable area containing the dynamically generated treasure rows.
+
+        TreasureProgressActivity adds completed, current, and locked
+        destination rows to progressContainer at runtime.
     -->
     <ScrollView
         android:id="@+id/progressScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:fillViewport="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/progressSummaryTextView"
         app:layout_constraintBottom_toTopOf="@id/progressBackButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <!--
-            Container populated at runtime with completed, current,
-            and locked Treasure Hunt entries.
+            Vertical container populated programmatically with treasure
+            progress rows.
         -->
         <LinearLayout
             android:id="@+id/progressContainer"
@@ -69,8 +82,7 @@
         android:id="@+id/progressBackButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Back to Map"
+        android:text="@string/back_to_map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

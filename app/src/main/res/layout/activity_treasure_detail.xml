@@ -10,6 +10,9 @@
     - Completion status
     - Optional treasure photo
     - Camera action for capturing or replacing the photo
+
+    Static visible text is referenced from strings.xml so the layout
+    avoids hardcoded-string lint warnings and remains easy to maintain.
 -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,8 +21,8 @@
     android:fillViewport="true">
 
     <!--
-        Vertical content container used so the detail screen remains readable
-        on devices with different screen sizes.
+        Vertical content container used so the detail information remains
+        readable on devices with different screen sizes.
     -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,12 +32,15 @@
 
         <!--
             Displays the human-readable treasure destination name.
+
+            The placeholder is replaced programmatically after the selected
+            treasure record is loaded from Room.
         -->
         <TextView
             android:id="@+id/treasureNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Treasure Name"
+            android:text="@string/treasure_name_placeholder"
             android:textSize="26sp"
             android:textStyle="bold" />
 
@@ -46,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Treasure Address"
+            android:text="@string/treasure_address_placeholder"
             android:textSize="17sp" />
 
         <!--
@@ -57,18 +63,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Treasure Clue"
+            android:text="@string/treasure_clue_placeholder"
             android:textSize="17sp" />
 
         <!--
             Displays whether the selected treasure has already been completed.
+
+            TreasureDetailActivity replaces this placeholder with the current
+            Room-based completion status.
         -->
         <TextView
             android:id="@+id/treasureStatusTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Status"
+            android:text="@string/treasure_status_placeholder"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -76,7 +85,7 @@
             Displays the participant's captured treasure photo.
 
             The image starts with a neutral background until a saved photo
-            becomes available for this destination.
+            becomes available for this treasure destination.
         -->
         <ImageView
             android:id="@+id/treasurePhotoImageView"
@@ -84,19 +93,19 @@
             android:layout_height="240dp"
             android:layout_marginTop="24dp"
             android:background="#E0E0E0"
-            android:contentDescription="Treasure photo"
+            android:contentDescription="@string/treasure_photo_description"
             android:scaleType="centerCrop" />
 
         <!--
-            Launches the device camera so the participant can capture a photo
-            associated with the currently selected treasure destination.
+            Launches the device camera so the participant can capture or
+            replace a photo associated with the selected treasure.
         -->
         <Button
             android:id="@+id/takePhotoButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Take Treasure Photo" />
+            android:text="@string/take_treasure_photo" />
 
         <!--
             Returns the participant to the Treasure Hunt map.
@@ -107,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="24dp"
-            android:text="Back to Map" />
+            android:text="@string/back_to_map" />
 
     </LinearLayout>
 

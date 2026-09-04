@@ -1,3 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AndroidApp3</string>
+
+<!--
+    Application name displayed by Android.
+-->
+<string name="app_name">AndroidApp3</string>
+
+<!--
+    Main Treasure Hunt screen controls.
+-->
+<string name="view_progress">View Progress</string>
+<string name="check_my_location">Check My Location</string>
+
+<!--
+    Treasure Hunt Progress screen text.
+-->
+<string name="treasure_hunt_progress">Treasure Hunt Progress</string>
+<string name="back_to_map">Back to Map</string>
+
+<!--
+    Treasure Detail screen placeholder and action text.
+-->
+<string name="treasure_name_placeholder">Treasure Name</string>
+<string name="treasure_address_placeholder">Treasure Address</string>
+<string name="treasure_clue_placeholder">Treasure Clue</string>
+<string name="treasure_status_placeholder">Status</string>
+<string name="treasure_photo_description">Treasure photo</string>
+<string name="take_treasure_photo">Take Treasure Photo</string>
+
 </resources>
