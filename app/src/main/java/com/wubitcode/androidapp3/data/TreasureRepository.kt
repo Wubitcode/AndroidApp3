@@ -14,6 +14,72 @@ import com.wubitcode.androidapp3.model.TreasureLocation
  * maintain or expand in future versions.
  */
 object TreasureRepository {
+    /**
+     * Initializes the Room database with the predefined Toronto Treasure Hunt
+     * locations when the database is empty.
+     *
+     * Existing database records are preserved so previously completed
+     * treasure progress is not overwritten when the app is reopened.
+     */
+    suspend fun initializeDatabase(treasureDao: TreasureDao) {
+
+        val storedTreasures = treasureDao.getAllTreasures()
+
+        if (storedTreasures.isEmpty()) {
+            treasureDao.insertAll(getTreasureLocations())
+        }
+    }
+
+    /**
+     * Retrieves all Treasure Hunt locations currently stored in Room.
+     *
+     * The locations are returned in their official hunt order according
+     * to their unique ID values.
+     */
+    suspend fun getStoredTreasureLocations(
+        treasureDao: TreasureDao
+    ): List<TreasureLocation> {
+
+        return treasureDao.getAllTreasures()
+    }
+
+    /**
+     * Records the completion of one treasure location in the Room database.
+     *
+     * Persisting the visited state allows progress to remain available
+     * after the application is closed or restarted.
+     */
+    suspend fun markTreasureVisited(
+        treasureDao: TreasureDao,
+        treasureId: Int
+    ) {
+        treasureDao.markTreasureVisited(treasureId)
+    }
+
+    /**
+     * Returns the number of completed treasure locations stored in Room.
+     *
+     * This value can later be displayed as participant progress such as
+     * "8 of 20 locations completed."
+     */
+    suspend fun getVisitedCount(
+        treasureDao: TreasureDao
+    ): Int {
+
+        return treasureDao.getVisitedCount()
+    }
+
+    /**
+     * Resets all Room-based Treasure Hunt progress.
+     *
+     * The location records remain in the database while their visited
+     * status is changed back to false.
+     */
+    suspend fun resetStoredProgress(
+        treasureDao: TreasureDao
+    ) {
+        treasureDao.resetProgress()
+    }
 
     /**
      * Returns all locations participating in the Toronto Treasure Hunt.
